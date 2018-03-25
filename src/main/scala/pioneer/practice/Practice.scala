@@ -2,7 +2,7 @@ package pioneer.practice
 
 object Practice {
   /** given a number `n`, returns n^2^ */
-  def square(n: Int): Int = -1
+  def square(n: Int): Int = n*n
 
   /**
     * given a string `s`, returns a new string with
