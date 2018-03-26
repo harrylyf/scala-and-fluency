@@ -12,69 +12,45 @@ import javax.imageio.ImageIO
   */
 object Picture {
 
-  def create_new_image(inputFilename: String): BufferedImage = {
+  def modify_image_helper(inputFilename: String, modify_1: String, modify_2: String): BufferedImage = {
     val image = loadImage(inputFilename)
-    val result = new BufferedImage(image.getWidth, image.getHeight, image.getType)
-    
+    val width = image.getWidth
+    val height = image.getHeight
+    val imageType = image.getType
+    val result = new BufferedImage(width, height, imageType)
+
+    for (column <- 0 until width)
+    for (row <- 0 until height)
+      result.setRGB(column, row, image.getRGB(modify_1.toInt, modify_2.toInt))
+
     result
   }
 
+
   /** Flips an image along its horizontal axis */
   def flipHorizontal(inputFilename: String, outputFilename: String): Boolean = {
-    val image = loadImage(inputFilename)
-
-    // create a new, empty image to copy pixels into
-    val result = create_new_image(inputFilename)
-
-    // copy the pixels over, column-by-column, from right to left
-    for (column <- 0 until image.getWidth)
-      for (row <- 0 until image.getHeight)
-        result.setRGB(column, row, image.getRGB(image.getWidth - column - 1, row))
+    val result = modify_image_helper(inputFilename, "width - column - 1", "row")
 
     saveImage(result, outputFilename)
   }
 
   /** Flips an image along its vertical axis */
   def flipVertical(inputFilename: String, outputFilename: String): Boolean = {
-    val image = loadImage(inputFilename)
-
-    // create a new, empty image to copy pixels into
-    val result = create_new_image(inputFilename)
-
-    // copy the pixels over, column-by-column, from top to bottom
-    for (column <- 0 until image.getWidth)
-      for (row <- 0 until image.getHeight)
-        result.setRGB(column, row, image.getRGB(column, image.getHeight - row - 1))
+    val result = modify_image_helper(inputFilename, "column", "height - row - 1")
 
     saveImage(result, outputFilename)
   }
 
   /** Rotates an image counter-clockwise 90 degrees */
   def rotateLeft(inputFilename: String, outputFilename: String): Boolean = {
-    val image = loadImage(inputFilename)
-
-    // create a new, empty image to copy pixels into
-    val result = create_new_image(inputFilename)
-
-    // copy the pixels over, column-by-column, while rotating
-    for (column <- 0 until image.getWidth)
-      for (row <- 0 until image.getHeight)
-        result.setRGB(column, row, image.getRGB(image.getHeight - row - 1, column))
+    val result = modify_image_helper(inputFilename, "height - row - 1", "column")
 
     saveImage(result, outputFilename)
   }
 
   /** Rotates an image clockwise 90 degrees */
   def rotateRight(inputFilename: String, outputFilename: String): Boolean = {
-    val image = loadImage(inputFilename)
-
-    // create a new, empty image to copy pixels into
-    val result = create_new_image(inputFilename)
-
-    // copy the pixels over, column-by-column, while rotating
-    for (column <- 0 until image.getWidth)
-      for (row <- 0 until image.getHeight)
-        result.setRGB(column, row, image.getRGB(row, image.getWidth - column - 1))
+    val result = modify_image_helper(inputFilename, "row", "width - column - 1")
 
     saveImage(result, outputFilename)
   }
@@ -84,7 +60,8 @@ object Picture {
     val image = loadImage(inputFilename)
 
     // create a new, empty image to copy pixels into
-    val result = create_new_image(inputFilename)
+    val result = new BufferedImage(image.getWidth, image.getHeight, image.getImageType)
+
 
     // copy the pixels over, column-by-column, grayscaling each pixel
     for (column <- 0 until image.getWidth)
