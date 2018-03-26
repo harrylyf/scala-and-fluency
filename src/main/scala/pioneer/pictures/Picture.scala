@@ -12,85 +12,106 @@ import javax.imageio.ImageIO
   */
 object Picture {
 
-  def modify_image_helper(inputFilename: String, modify_1: String, modify_2: String): BufferedImage = {
-    val image = loadImage(inputFilename)
-    val width = image.getWidth
-    val height = image.getHeight
-    val imageType = image.getType
+  /** Flips an image along its horizontal axis */
+  def flipHorizontal(bufferedImage_name: BufferedImage): BufferedImage = {
+
+    // create a new, empty image to copy pixels into
+    val width = bufferedImage_name.getWidth
+    val height = bufferedImage_name.getHeight
+    val imageType = bufferedImage_name.getType
     val result = new BufferedImage(width, height, imageType)
 
+    // copy the pixels over, column-by-column, from right to left
     for (column <- 0 until width)
-    for (row <- 0 until height)
-      result.setRGB(column, row, image.getRGB(modify_1.toInt, modify_2.toInt))
-
+      for (row <- 0 until height)
+        result.setRGB(column, row, bufferedImage_name.getRGB(width - column - 1, row))
     result
   }
 
-
-  /** Flips an image along its horizontal axis */
-  def flipHorizontal(inputFilename: String, outputFilename: String): Boolean = {
-    val result = modify_image_helper(inputFilename, "width - column - 1", "row")
-
-    saveImage(result, outputFilename)
-  }
-
   /** Flips an image along its vertical axis */
-  def flipVertical(inputFilename: String, outputFilename: String): Boolean = {
-    val result = modify_image_helper(inputFilename, "column", "height - row - 1")
+  def flipVertical(bufferedImage_name: BufferedImage): BufferedImage = {
 
-    saveImage(result, outputFilename)
+    // create a new, empty image to copy pixels into
+    val width = bufferedImage_name.getWidth
+    val height = bufferedImage_name.getHeight
+    val imageType = bufferedImage_name.getType
+    val result = new BufferedImage(width, height, imageType)
+
+    // copy the pixels over, column-by-column, from top to bottom
+    for (column <- 0 until width)
+      for (row <- 0 until height)
+        result.setRGB(column, row, bufferedImage_name.getRGB(column, height - row - 1))
+    result
   }
 
   /** Rotates an image counter-clockwise 90 degrees */
-  def rotateLeft(inputFilename: String, outputFilename: String): Boolean = {
-    val result = modify_image_helper(inputFilename, "height - row - 1", "column")
+  def rotateLeft(bufferedImage_name: BufferedImage): BufferedImage = {
 
-    saveImage(result, outputFilename)
+    // create a new, empty image to copy pixels into
+    val width = bufferedImage_name.getHeight
+    val height = bufferedImage_name.getWidth
+    val imageType = bufferedImage_name.getType
+    val result = new BufferedImage(width, height, imageType)
+
+    // copy the pixels over, column-by-column, while rotating
+    for (column <- 0 until width)
+      for (row <- 0 until height)
+        result.setRGB(column, row, bufferedImage_name.getRGB(height - row - 1, column))
+    result
   }
 
   /** Rotates an image clockwise 90 degrees */
-  def rotateRight(inputFilename: String, outputFilename: String): Boolean = {
-    val result = modify_image_helper(inputFilename, "row", "width - column - 1")
+  def rotateRight(bufferedImage_name: BufferedImage): BufferedImage = {
+    // create a new, empty image to copy pixels into
+    val width = bufferedImage_name.getHeight
+    val height = bufferedImage_name.getWidth
+    val imageType = bufferedImage_name.getType
+    val result = new BufferedImage(width, height, imageType)
 
-    saveImage(result, outputFilename)
+    // copy the pixels over, column-by-column, while rotating
+    for (column <- 0 until width)
+      for (row <- 0 until height)
+        result.setRGB(column, row, bufferedImage_name.getRGB(row, width - column - 1))
+    result
   }
 
   /** Coverts an image to grayscale */
-  def grayScale(inputFilename: String, outputFilename: String): Boolean = {
-    val image = loadImage(inputFilename)
+  def grayScale(bufferedImage_name: BufferedImage): BufferedImage = {
 
     // create a new, empty image to copy pixels into
-    val result = new BufferedImage(image.getWidth, image.getHeight, image.getImageType)
-
+    val width = bufferedImage_name.getWidth
+    val height = bufferedImage_name.getHeight
+    val imageType = bufferedImage_name.getType
+    val result = new BufferedImage(width, height, imageType)
 
     // copy the pixels over, column-by-column, grayscaling each pixel
-    for (column <- 0 until image.getWidth)
-      for (row <- 0 until image.getHeight) {
+    for (column <- 0 until width)
+      for (row <- 0 until height) {
         // grayscale the pixel by taking the average of the red, green, and
         // blue parts of the pixel
-        val pixel = new Color(image.getRGB(column, row))
+        val pixel = new Color(bufferedImage_name.getRGB(column, row))
         val gray: Int =
           Math.round((pixel.getRed + pixel.getGreen + pixel.getBlue) / 3f)
         val newPixel = new Color(gray, gray, gray)
         result.setRGB(column, row, newPixel.getRGB)
       }
-
-    saveImage(result, outputFilename)
+    result
   }
 
-  /*****************************************************************************
+  /** ***************************************************************************
     * Helper functions
     *
     * You shouldn't need to modify anything below this line (unless you want
     * to change the names of some functions).
-    ***************************************************************************/
+    * **************************************************************************/
 
   /**
     * Given a path to an image file, loads an image from that file
+    *
     * @param filename the path to the image file
     * @return a `BufferedImage` object that contains the image data loaded from
     *         the file
-    * @throws FileNotFoundException if the file doesn't exist
+    * @throws FileNotFoundException    if the file doesn't exist
     * @throws IllegalArgumentException if the file doesn't contain an image
     */
   def loadImage(filename: String): BufferedImage = {
@@ -100,6 +121,7 @@ object Picture {
   /**
     * Given an input stream that contains image data, loads the image data and
     * returns it as a `BufferedImage`.
+    *
     * @return a `BufferedImage` object that contains the image data
     * @throws IllegalArgumentException if the file doesn't contain an image
     */
@@ -119,13 +141,15 @@ object Picture {
   /**
     * Given a `BufferedImage` object and path to a file, saves the image to the
     * `filename`. By default, the image format is PNG
+    *
     * @param format "png" by default
     * @return true if the file was successfully written
     * @throws IllegalArgumentException if any of the arguments are `null`
-    * @throws IOException if there's an error writing the file
+    * @throws IOException              if there's an error writing the file
     */
   def saveImage(image: BufferedImage, filename: String,
                 format: String = "png"): Boolean = {
     ImageIO.write(image, format, new File(filename))
   }
 }
+
