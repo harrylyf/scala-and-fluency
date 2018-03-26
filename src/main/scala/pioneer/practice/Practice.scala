@@ -8,7 +8,7 @@ object Practice {
     * given a string `s`, returns a new string with
     * two copies of `s`, back-to-back
     */
-  def repeat(s: String): String = ""
+  def repeat(s: String): String = s+s
 
   /**
     * from http://codingbat.com/prob/p187868
@@ -16,5 +16,6 @@ object Practice {
     * Returns true if we sleep in. We sleep in if it's not a weekday or
     * we're on vacation.
     */
-  // replace this comment with your implementation of sleepIn
+  def implement(weekday: Boolean, vacation: Boolean): Boolean = !weekday || vacation
+
 }

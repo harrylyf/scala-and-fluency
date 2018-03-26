@@ -52,5 +52,19 @@ class PracticeTests extends FunSuite {
     * Tests for `sleepIn`
     */
 
-  // write your tests here
+  test("sleepIn-1"){
+    assert(Practice.implement(false, false) === true)
+  }
+
+  test("sleepIn-2"){
+    assert(Practice.implement(true, false) === false)
+  }
+
+  test("sleepIn-3"){
+    assert(Practice.implement(false, true) === true)
+  }
+
+  test("sleepIn-4"){
+    assert(Practice.implement(true, true) === true)
+  }
 }
